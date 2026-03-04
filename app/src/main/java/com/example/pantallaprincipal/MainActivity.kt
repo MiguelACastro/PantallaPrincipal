@@ -46,11 +46,16 @@ class MainActivity : ComponentActivity() {
                     when (currentScreen) {
                         "main" -> MainScreen(
                             modifier = Modifier.padding(innerPadding),
-                            onLoginClick = { currentScreen = "login" }
+                            onLoginClick = { currentScreen = "login" },
+                            onSignInClick = { currentScreen = "signIn" }
                         )
                         "login" -> Login(
                             modifier = Modifier.padding(innerPadding),
                             onLoginClick = { currentScreen = "main" }
+                        )
+                        "signIn" -> SignIn(
+                            modifier = Modifier.padding(innerPadding),
+                            onSignInClick = { currentScreen = "main" }
                         )
                     }
                 }
@@ -60,7 +65,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, onLoginClick: () -> Unit = {}) {
+fun MainScreen(modifier: Modifier = Modifier, onLoginClick: () -> Unit = {}, onSignInClick: () -> Unit = {}) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -109,6 +114,7 @@ fun MainScreen(modifier: Modifier = Modifier, onLoginClick: () -> Unit = {}) {
                     color = Color.Blue,
                     shape = RoundedCornerShape(50)
                 )
+                .clickable { onSignInClick() }
                 .clip(RoundedCornerShape(50))
                 .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
@@ -182,6 +188,74 @@ fun Login(modifier: Modifier = Modifier, onLoginClick: () -> Unit = {}) {
     }
 }
 
+@Composable
+fun SignIn(modifier: Modifier = Modifier, onSignInClick: () -> Unit = {}) {
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(R.drawable.sign_in),
+                contentDescription = "Persona abriendo puerta",
+                modifier = Modifier.padding(vertical = 32.dp)
+            )
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = { Text("Confirmar contraseña") },
+                    modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Color.Blue)
+                .clickable { onSignInClick() }
+                .padding(horizontal = 32.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Registrarse",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
@@ -195,6 +269,14 @@ fun MainScreenPreview() {
 fun LoginPreview() {
     PantallaPrincipalTheme {
         Login()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SignInPreview() {
+    PantallaPrincipalTheme {
+        SignIn()
     }
 }
 
