@@ -3,8 +3,15 @@ Este proyecto consiste en la réplica de una pantalla de inicio basada en una im
 
 ## Original
 
-![](original.png)
+![](/img/original.png)
 
 ## Resultado
 
-![](resultado.png)
+### Pantalla principal
+![](/img/resultado.png)
+
+### Pantalla de login
+![](/img/login.png)
+
+### Pantalla de registro
+![](/img/sign_in.png)
