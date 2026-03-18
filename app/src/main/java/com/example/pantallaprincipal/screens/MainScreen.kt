@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,44 +25,55 @@ import androidx.compose.ui.unit.dp
 import com.example.pantallaprincipal.components.Contact
 
 @Composable
-fun MainScreen(
-    onLoginClick: () -> Unit = {},
-    onSignInClick: () -> Unit = {}
-) {
+fun MainScreen() {
     val contactList = remember { mutableStateListOf<Pair<String, String>>() }
     var name by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+
+    val isNameValid by remember {
+        derivedStateOf { name.isNotBlank() && name.all { it.isLetter() || it.isWhitespace() } }
+    }
+    val isPhoneValid by remember {
+        derivedStateOf { phone.length == 10 && phone.all { it.isDigit() } }
+    }
+
+    val isFormValid by remember {
+        derivedStateOf { isNameValid && isPhoneValid }
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
             label = { Text("Nombre") },
+            isError = name.isNotEmpty() && !isNameValid,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = phone,
             onValueChange = { phone = it },
             label = { Text("Teléfono") },
+            isError = phone.isNotEmpty() && !isPhoneValid,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                if (name.isNotBlank() && phone.isNotBlank()) {
+                if (isFormValid) {
                     contactList.add(Pair(name, phone))
                     name = ""
                     phone = ""
                 }
             },
+            enabled = isFormValid,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Agregar Contacto")
         }
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = { contactList.clear() },
             modifier = Modifier.fillMaxWidth()
@@ -72,7 +84,8 @@ fun MainScreen(
         LazyColumn {
             items(contactList) { contact ->
                 Contact(name = contact.first, phone = contact.second)
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp).
+                                            fillMaxWidth())
             }
         }
     }

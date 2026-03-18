@@ -20,8 +20,7 @@ fun AppNavigation() {
     ) {
         composable("main") {
             MainScreen(
-                onLoginClick = { navController.navigate("login") },
-                onSignInClick = { navController.navigate("signin") }
+
             )
         }
         composable("login") {
