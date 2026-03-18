@@ -1,93 +1,79 @@
 package com.example.pantallaprincipal.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.pantallaprincipal.R
+import com.example.pantallaprincipal.components.Contact
 
 @Composable
 fun MainScreen(
     onLoginClick: () -> Unit = {},
-    onSignInClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onSignInClick: () -> Unit = {}
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Image(
-            painter = painterResource(R.drawable.login_image),
-            contentDescription = "Persona al lado de un telefono",
-            modifier = Modifier.padding(vertical = 32.dp)
-        )
+    val contactList = remember { mutableStateListOf<Pair<String, String>>() }
+    var name by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
 
-        Text(
-            text = "Hola!",
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold
+    Column(modifier = Modifier.padding(16.dp)) {
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Nombre") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Bienvenido a la aplicación!",
-            fontSize = 24.sp,
-            color = Color.Gray,
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+            value = phone,
+            onValueChange = { phone = it },
+            label = { Text("Teléfono") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth()
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.75f)
-                .clip(RoundedCornerShape(50))
-                .background(Color.Blue)
-                .clickable { onLoginClick() }
-                .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                if (name.isNotBlank() && phone.isNotBlank()) {
+                    contactList.add(Pair(name, phone))
+                    name = ""
+                    phone = ""
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "Iniciar sesión",
-                fontSize = 24.sp,
-                color = Color.White
-            )
+            Text("Agregar Contacto")
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = { contactList.clear() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Limpiar Todo")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.75f)
-                .border(
-                    width = 2.dp,
-                    color = Color.Blue,
-                    shape = RoundedCornerShape(50)
-                )
-                .clickable { onSignInClick() }
-                .clip(RoundedCornerShape(50))
-                .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Registrarse",
-                fontSize = 24.sp,
-                color = Color.Blue
-            )
+        LazyColumn {
+            items(contactList) { contact ->
+                Contact(name = contact.first, phone = contact.second)
+                Spacer(modifier = Modifier.height(12.dp))
+            }
         }
     }
 }
